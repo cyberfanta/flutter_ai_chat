@@ -14,6 +14,12 @@ class ChatMessage {
 class ChatProvider with ChangeNotifier {
   List<ChatMessage> messages = [];
 
+  // Estado para controlar si está esperando una respuesta
+  bool _isLoading = false;
+
+  // Getter para el estado de carga
+  bool get isLoading => _isLoading;
+
   Future<void> sendMessage(String message) async {
     // Guard: mensaje vacío
     if (message.trim().isEmpty) {
@@ -22,6 +28,9 @@ class ChatProvider with ChangeNotifier {
 
     // Añadir mensaje del usuario
     messages.add(ChatMessage(role: 'user', content: message));
+
+    // Activar el estado de carga
+    _isLoading = true;
     notifyListeners();
 
     // Guard: verificar si la API key existe
@@ -33,6 +42,8 @@ class ChatProvider with ChangeNotifier {
           content: 'Error: No se encontró la clave API en .env',
         ),
       );
+      // Desactivar el estado de carga
+      _isLoading = false;
       notifyListeners();
       return;
     }
@@ -64,6 +75,8 @@ class ChatProvider with ChangeNotifier {
             content: 'Error: ${response.statusCode} - ${response.body}',
           ),
         );
+        // Desactivar el estado de carga
+        _isLoading = false;
         notifyListeners();
         return;
       }
@@ -78,6 +91,8 @@ class ChatProvider with ChangeNotifier {
             content: 'Error: No se recibió respuesta válida del modelo',
           ),
         );
+        // Desactivar el estado de carga
+        _isLoading = false;
         notifyListeners();
         return;
       }
@@ -86,8 +101,10 @@ class ChatProvider with ChangeNotifier {
       messages.add(ChatMessage(role: 'model', content: content));
     } catch (e) {
       messages.add(ChatMessage(role: 'model', content: 'Error: $e'));
+    } finally {
+      // Desactivar el estado de carga siempre en el finally
+      _isLoading = false;
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 }

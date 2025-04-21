@@ -9,11 +9,12 @@ class ThemeProvider extends ChangeNotifier {
   static const Color rosaPastel = Color(0xFFFFB6C1);
 
   // Opciones de colores con nombres
+  // Los nombres se mostrarán traducidos por ColorSelector
   final List<ColorOption> colorOptions = [
-    ColorOption('Dorado', dorado),
-    ColorOption('Verde Lima', verdeLimaPastel),
-    ColorOption('Azul Cielo', azulCielo),
-    ColorOption('Rosa Pastel', rosaPastel),
+    ColorOption('Gold', dorado),
+    ColorOption('Lime Green', verdeLimaPastel),
+    ColorOption('Sky Blue', azulCielo),
+    ColorOption('Pastel Pink', rosaPastel),
   ];
 
   // Color actual seleccionado (predeterminado: verde lima)
@@ -83,7 +84,7 @@ class ThemeProvider extends ChangeNotifier {
 
       // Si es un color personalizado, guardar su valor
       if (index == -1 && customColor != null) {
-        await prefs.setInt('customColorValue', customColor.value);
+        await prefs.setInt('customColorValue', customColor.toARGB32());
       }
     } catch (e) {
       // Ignorar errores al guardar, pero podríamos registrarlos
@@ -105,7 +106,7 @@ class ThemeProvider extends ChangeNotifier {
   // Actualizar a un color personalizado
   void setCustomColor(Color color) {
     // Guard: color inválido o transparente
-    if (color.value == 0 || color.opacity == 0) return;
+    if (color.toARGB32() == 0 || color.a == 0) return;
 
     _selectedColorIndex = -1; // Indica que es un color personalizado
     _selectedColor = color;
@@ -118,8 +119,23 @@ class ThemeProvider extends ChangeNotifier {
     // Valores específicos para cada tema
     Color surfaceColor;
 
-    final hsl = HSLColor.fromColor(baseColor);
-    surfaceColor = hsl.withLightness(0.95).withSaturation(0.85).toColor();
+    if (baseColor == dorado) {
+      // El tema dorado tiene un color superficie específico
+      surfaceColor = const Color(0xFFFFF8E1);
+    } else if (baseColor == verdeLimaPastel) {
+      // Para el verde, usamos un verde muy claro como superficie
+      surfaceColor = const Color(0xFFF1FFE8);
+    } else if (baseColor == azulCielo) {
+      // Para el azul, usamos un azul muy claro como superficie
+      surfaceColor = const Color(0xFFE6F5FF);
+    } else if (baseColor == rosaPastel) {
+      // Para el rosa, usamos un rosa muy claro como superficie
+      surfaceColor = const Color(0xFFFFF0F5);
+    } else {
+      // Para colores personalizados, generamos una versión muy clara
+      final hsl = HSLColor.fromColor(baseColor);
+      surfaceColor = hsl.withLightness(0.95).withSaturation(0.85).toColor();
+    }
 
     return ThemeData(
       primaryColor: baseColor,
@@ -153,15 +169,6 @@ class ThemeProvider extends ChangeNotifier {
   Color _getDarkerColor(Color baseColor) {
     final hsl = HSLColor.fromColor(baseColor);
     return hsl.withLightness((hsl.lightness - 0.15).clamp(0.0, 1.0)).toColor();
-  }
-
-  Color _getVeryLightColor(Color baseColor) {
-    // Este método ya no se usa directamente, pero lo mantenemos por compatibilidad
-    final hsl = HSLColor.fromColor(baseColor);
-    return hsl
-        .withLightness((hsl.lightness + 0.35).clamp(0.0, 1.0))
-        .withSaturation((hsl.saturation - 0.3).clamp(0.0, 1.0))
-        .toColor();
   }
 
   Color _getContrastColor(Color color) {

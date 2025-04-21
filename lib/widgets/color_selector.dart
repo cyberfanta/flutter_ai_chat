@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ai_chat/l10n/l10n.dart';
 import 'package:flutter_ai_chat/providers/theme_provider.dart';
 import 'package:flutter_ai_chat/utils/color_utils.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -14,6 +15,7 @@ class ColorSelector extends StatelessWidget {
 
     final themeProvider = Provider.of<ThemeProvider>(context);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     // Guard: verifica si hay opciones de colores
     if (themeProvider.colorOptions.isEmpty) {
@@ -31,7 +33,7 @@ class ColorSelector extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              'Personaliza el tema',
+              l10n.customizeTheme,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -39,7 +41,6 @@ class ColorSelector extends StatelessWidget {
               ),
             ),
           ),
-          // Envolvemos en un Padding para darle espacio para las sombras
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -54,6 +55,29 @@ class ColorSelector extends StatelessWidget {
                     final isSelected =
                         themeProvider.selectedColorIndex == index;
 
+                    String colorName;
+                    // Traducir los nombres de los colores
+                    switch (colorOption.name) {
+                      case 'Dorado':
+                      case 'Gold':
+                        colorName = l10n.goldTheme;
+                        break;
+                      case 'Verde Lima':
+                      case 'Lime Green':
+                        colorName = l10n.limeTheme;
+                        break;
+                      case 'Azul Cielo':
+                      case 'Sky Blue':
+                        colorName = l10n.skyBlueTheme;
+                        break;
+                      case 'Rosa Pastel':
+                      case 'Pastel Pink':
+                        colorName = l10n.pinkTheme;
+                        break;
+                      default:
+                        colorName = colorOption.name;
+                    }
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: GestureDetector(
@@ -62,7 +86,7 @@ class ColorSelector extends StatelessWidget {
                         },
                         child: buildItem(
                           themeProvider,
-                          colorOption.name,
+                          colorName,
                           colorOption.color,
                           theme.colorScheme.primary,
                           isSelected,
@@ -73,12 +97,11 @@ class ColorSelector extends StatelessWidget {
 
                   // Opción de color personalizado
                   if (themeProvider.selectedColorIndex == -1)
-                    // Usamos un SizedBox con clipBehavior para el personalizado
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: buildItem(
                         themeProvider,
-                        "Personalizado",
+                        l10n.customTheme,
                         themeProvider.selectedColor,
                         themeProvider.selectedColor,
                         true,
@@ -89,14 +112,13 @@ class ColorSelector extends StatelessWidget {
 
                   // Botón para seleccionar un color personalizado
                   Container(
-                    margin: const EdgeInsets.only(bottom: 24, top: 12),
+                    margin: const EdgeInsets.only(bottom: 24),
                     child: const ColorPickerButton(),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 4),
           Container(
             height: 1,
             color: ColorUtils.adjustOpacity(theme.colorScheme.primary, 0.3),
@@ -187,12 +209,13 @@ class ColorPickerButton extends StatelessWidget {
     if (!context.mounted) return;
 
     Color pickerColor = themeProvider.selectedColor;
+    final l10n = context.l10n;
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Elige un color personalizado'),
+          title: Text(l10n.chooseCustomColor),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: pickerColor,
@@ -207,19 +230,13 @@ class ColorPickerButton extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.black),
-              ),
+              child: Text(l10n.cancel, style: TextStyle(color: Colors.black)),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: const Text(
-                'Aplicar',
-                style: TextStyle(color: Colors.black),
-              ),
+              child: Text(l10n.apply, style: TextStyle(color: Colors.black)),
               onPressed: () {
                 // Esto establecerá selectedColorIndex = -1 automáticamente
                 themeProvider.setCustomColor(pickerColor);

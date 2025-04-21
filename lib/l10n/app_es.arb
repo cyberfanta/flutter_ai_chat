@@ -1,0 +1,39 @@
+{
+  "@@locale": "es",
+  
+  "appTitle": "Chat con IA",
+  
+  "chatScreenTitle": "Chat con Gemini",
+  
+  "messageHint": "Escribe tu mensaje...",
+  
+  "userLabel": "Tú",
+  
+  "botLabel": "Gemini",
+  
+  "thinkingLabel": "Pensando",
+  
+  "customizeTheme": "Personaliza el tema",
+  
+  "noColorOptions": "No hay opciones de colores disponibles",
+  
+  "goldTheme": "Dorado",
+  
+  "limeTheme": "Verde Lima",
+  
+  "skyBlueTheme": "Azul Cielo",
+  
+  "pinkTheme": "Rosa Pastel",
+  
+  "customTheme": "Personalizado",
+  
+  "chooseCustomColor": "Elige un color personalizado",
+  
+  "cancel": "Cancelar",
+  
+  "apply": "Aplicar",
+  
+  "apiKeyError": "Error: No se encontró la clave API en .env",
+  
+  "responseError": "Error: Respuesta inválida del modelo"
+} 

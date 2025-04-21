@@ -1,0 +1,93 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "AI Chat",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "chatScreenTitle": "Chat with Gemini",
+  "@chatScreenTitle": {
+    "description": "Title of the chat screen"
+  },
+  
+  "messageHint": "Type your message...",
+  "@messageHint": {
+    "description": "Hint text for the message input field"
+  },
+  
+  "userLabel": "You",
+  "@userLabel": {
+    "description": "Label for user messages"
+  },
+  
+  "botLabel": "Gemini",
+  "@botLabel": {
+    "description": "Label for bot messages"
+  },
+  
+  "thinkingLabel": "Thinking",
+  "@thinkingLabel": {
+    "description": "Label shown when the AI is processing a response"
+  },
+  
+  "customizeTheme": "Customize theme",
+  "@customizeTheme": {
+    "description": "Label for theme customization section"
+  },
+  
+  "noColorOptions": "No color options available",
+  "@noColorOptions": {
+    "description": "Message when no color options are available"
+  },
+  
+  "goldTheme": "Gold",
+  "@goldTheme": {
+    "description": "Name of gold theme"
+  },
+  
+  "limeTheme": "Lime Green",
+  "@limeTheme": {
+    "description": "Name of lime green theme"
+  },
+  
+  "skyBlueTheme": "Sky Blue",
+  "@skyBlueTheme": {
+    "description": "Name of sky blue theme"
+  },
+  
+  "pinkTheme": "Pastel Pink",
+  "@pinkTheme": {
+    "description": "Name of pastel pink theme"
+  },
+  
+  "customTheme": "Custom",
+  "@customTheme": {
+    "description": "Label for custom theme"
+  },
+  
+  "chooseCustomColor": "Choose a custom color",
+  "@chooseCustomColor": {
+    "description": "Title for custom color picker dialog"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "apply": "Apply",
+  "@apply": {
+    "description": "Apply button text"
+  },
+  
+  "apiKeyError": "Error: API key not found in .env",
+  "@apiKeyError": {
+    "description": "Error message for missing API key"
+  },
+  
+  "responseError": "Error: Invalid response from model",
+  "@responseError": {
+    "description": "Error message for invalid API response"
+  }
+} 
