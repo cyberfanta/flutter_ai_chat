@@ -35,5 +35,7 @@
   
   "apiKeyError": "Error: No se encontró la clave API en .env",
   
-  "responseError": "Error: Respuesta inválida del modelo"
+  "responseError": "Error: Respuesta inválida del modelo",
+  
+  "messageCopied": "Mensaje copiado al portapapeles"
 } 

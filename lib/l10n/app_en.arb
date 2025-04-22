@@ -89,5 +89,10 @@
   "responseError": "Error: Invalid response from model",
   "@responseError": {
     "description": "Error message for invalid API response"
+  },
+  
+  "messageCopied": "Message copied to clipboard",
+  "@messageCopied": {
+    "description": "Confirmation message shown when a message is copied to clipboard"
   }
 } 

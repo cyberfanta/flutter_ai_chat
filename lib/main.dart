@@ -1,13 +1,16 @@
 import 'dart:async'; // Para usar Timer
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Para acceder al portapapeles
 import 'package:flutter_ai_chat/l10n/l10n.dart';
 import 'package:flutter_ai_chat/providers/chat_provider.dart';
 import 'package:flutter_ai_chat/providers/theme_provider.dart';
 import 'package:flutter_ai_chat/utils/color_utils.dart';
+import 'package:flutter_ai_chat/utils/markdown_utils.dart';
 import 'package:flutter_ai_chat/widgets/color_selector.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -320,49 +323,129 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           if (!isUser) const SizedBox(width: 8),
                           Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                                vertical: 10.0,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    isUser
-                                        ? theme.colorScheme.primary
-                                        : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 3,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isUser ? l10n.userLabel : l10n.botLabel,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          isUser
-                                              ? Colors.white
-                                              : theme.colorScheme.primary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
+                            child: GestureDetector(
+                              onTap:
+                                  () => _copyMessageToClipboard(
                                     message.content,
-                                    style: TextStyle(
-                                      color:
-                                          isUser
-                                              ? Colors.white
-                                              : Colors.black87,
-                                    ),
+                                    context,
                                   ),
-                                ],
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 10.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isUser
+                                          ? theme.colorScheme.primary
+                                          : Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          isUser
+                                              ? l10n.userLabel
+                                              : l10n.botLabel,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                isUser
+                                                    ? Colors.white
+                                                    : theme.colorScheme.primary,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.copy,
+                                          size: 16,
+                                          color:
+                                              isUser
+                                                  ? Colors.white70
+                                                  : Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    MarkdownBody(
+                                      data: message.content,
+                                      styleSheet: MarkdownStyleSheet(
+                                        p: TextStyle(
+                                          color:
+                                              isUser
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                          fontSize: 16,
+                                        ),
+                                        strong: TextStyle(
+                                          color:
+                                              isUser
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        em: TextStyle(
+                                          color:
+                                              isUser
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 16,
+                                        ),
+                                        code: TextStyle(
+                                          color:
+                                              isUser
+                                                  ? ColorUtils.adjustOpacity(
+                                                    Colors.white,
+                                                    0.9,
+                                                  )
+                                                  : ColorUtils.adjustOpacity(
+                                                    Colors.black87,
+                                                    0.9,
+                                                  ),
+                                          backgroundColor:
+                                              isUser
+                                                  ? ColorUtils.adjustOpacity(
+                                                    Colors.white,
+                                                    0.2,
+                                                  )
+                                                  : ColorUtils.adjustOpacity(
+                                                    Colors.grey,
+                                                    0.2,
+                                                  ),
+                                          fontSize: 14,
+                                          fontFamily: 'monospace',
+                                        ),
+                                        blockquote: TextStyle(
+                                          color:
+                                              isUser
+                                                  ? ColorUtils.adjustOpacity(
+                                                    Colors.white,
+                                                    0.9,
+                                                  )
+                                                  : ColorUtils.adjustOpacity(
+                                                    Colors.black87,
+                                                    0.9,
+                                                  ),
+                                          fontSize: 16,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -696,6 +779,41 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  // Función mejorada para copiar el texto de un mensaje al portapapeles
+  void _copyMessageToClipboard(String text, BuildContext context) async {
+    try {
+      // Eliminar el formato Markdown antes de copiar
+      final plainText = MarkdownUtils.stripMarkdown(text);
+      
+      // Usar await con Clipboard para asegurarnos de que se complete la operación
+      await Clipboard.setData(ClipboardData(text: plainText));
+      
+      // Mostrar un snackbar para confirmar la copia
+      if (context.mounted) {  // Verificar si el contexto sigue siendo válido
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.messageCopied),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      // Mostrar un mensaje de error si falla la copia
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error al copiar: ${e.toString()}"),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      debugPrint('Error al copiar al portapapeles: $e');
+    }
   }
 }
 
